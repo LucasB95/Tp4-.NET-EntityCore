@@ -209,7 +209,7 @@ namespace Tp3
             this.label3.Size = new System.Drawing.Size(121, 15);
             this.label3.TabIndex = 9;
             this.label3.Text = "Cantidad de Personas";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
+            //this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // label4
             // 
@@ -237,7 +237,7 @@ namespace Tp3
             this.label6.Size = new System.Drawing.Size(92, 15);
             this.label6.TabIndex = 12;
             this.label6.Text = "Visualizar Precio";
-            this.label6.Click += new System.EventHandler(this.label6_Click);
+            //this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
             // label7
             // 

@@ -40,20 +40,20 @@ namespace Tp3
 
         }
 
-        public bool insertarUsuario(Usuario usu)
-        {
-            foreach (Usuario a in usuarios)
+        //public bool insertarUsuario(Usuario usu)
+        //{
+        //    foreach (Usuario a in usuarios)
 
-                if (a != null && a.getDNI() != usu.getDNI())
-                {
+        //        if (a != null && a.getDNI() != usu.getDNI())
+        //        {
 
-                    usuarios.Add(usu);
-                    return true;
+        //            usuarios.Add(usu);
+        //            return true;
 
-                }
+        //        }
 
-            return false;
-        }
+        //    return false;
+        //}
 
 
         public void setDNI(int dni)

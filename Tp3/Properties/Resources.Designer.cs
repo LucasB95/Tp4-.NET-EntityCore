@@ -61,7 +61,7 @@ namespace Tp3.Properties {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a Data Source=DESKTOP-EI7IQ66\SQLEXPRESS;Initial Catalog=AgenciaTP4;Integrated Security=True.
+        ///   Busca una cadena traducida similar a Data Source=DESKTOP-EI7IQ66\SQLEXPRESS;Initial Catalog=AgenciaTp4corregido;Integrated Security=True.
         /// </summary>
         internal static string ConnectionString {
             get {

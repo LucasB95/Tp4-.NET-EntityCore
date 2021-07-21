@@ -76,7 +76,7 @@ namespace Tp3
             this.label4.Size = new System.Drawing.Size(67, 15);
             this.label4.TabIndex = 3;
             this.label4.Text = "Contraseña";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
+      
             // 
             // button1
             // 

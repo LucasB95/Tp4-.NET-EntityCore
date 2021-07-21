@@ -16,11 +16,7 @@ namespace Tp3
             InitializeComponent();
         }
 
-        private void label4_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        //botton cerrar sesion
         private void button1_Click(object sender, EventArgs e)
         {
             this.Hide();
@@ -28,6 +24,7 @@ namespace Tp3
             login.Show();
         }
 
+        //boton crear usuario
         private void button2_Click(object sender, EventArgs e)
         {
 

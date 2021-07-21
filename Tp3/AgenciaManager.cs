@@ -11,34 +11,29 @@ namespace Tp3
 {
     class AgenciaManager
     {
-        public Agencia miAgencia;
+  
         private DbSet<Usuario> misUsuarioos;
         private DbSet<Alojamiento> misAlojamientos;
         private DbSet<Reserva> misReservas;
-        private MyContext contexto;
-        private MyContextAlojamiento contextoAloj;
-        private MyContextReserva contextoReser;
+        private MyContextGlobal contextGlobal;
         public int contadorReservas = 0;
         public int contInsertar = 0;
         public int prueba = 0;
         public int alojcont = 0;
         public int usuarioscont = 0;
-
+        public int Total = 0;
+        public int ts = 0;         
 
         public AgenciaManager()
         {
-            
-             inicializarAtributosUsuario();
-             inicializarAtributosAlojamiento();
-            inicializarAtributosReserva();
-
+            inicializarAtributos();
         }
         public List<List<string>> buscarAlojamiento(String Ciudad, DateTime Pdesde, DateTime Phasta, int cantPersonas, String Tipo,int estrellas)
         {
 
 
             List<List<string>> aloj = new List<List<string>>();
-            foreach (Alojamiento u in contextoAloj.alojamientos)
+            foreach (Alojamiento u in contextGlobal.alojamientos)
             {
               
                     if (u.getCantPersonas() >= cantPersonas || u.getEstrellas() >= estrellas)
@@ -61,15 +56,22 @@ namespace Tp3
             return aloj;
         }
 
-        private void inicializarAtributosUsuario()
+        private void inicializarAtributos()
         {
             try
             {
                 //creo un contexto
-                contexto = new MyContext();
+                contextGlobal = new MyContextGlobal();
                 //cargo los usuarios
-                contexto.usuarios.Load();
-                misUsuarioos = contexto.usuarios;
+                contextGlobal.usuarios.Load();
+                misUsuarioos = contextGlobal.usuarios;
+                //cargo Alojamientos
+                contextGlobal.alojamientos.Load();
+                misAlojamientos = contextGlobal.alojamientos;
+                //cargo Reservas
+                contextGlobal.reservas.Load();
+                misReservas = contextGlobal.reservas;
+                contadorReservas = contextGlobal.reservas.Count();
             }
             catch (Exception)
             {
@@ -80,7 +82,7 @@ namespace Tp3
         public List<List<string>> obtenerUsuarios()
         {
             List<List<string>> salida = new List<List<string>>();
-            foreach (Usuario u in contexto.usuarios)
+            foreach (Usuario u in contextGlobal.usuarios)
                 salida.Add(new List<string>() { u.DNI.ToString(), u.Nombre, u.Mail, u.Password, u.esAdmin.ToString(), u.bloqueado.ToString() });
             return salida;
         }
@@ -93,7 +95,7 @@ namespace Tp3
                 Usuario nuevo = new Usuario(usu.DNI, usu.Nombre, usu.Mail, usu.Password, usu.esAdmin, usu.bloqueado);
                 //contexto.usuarios.Add(nuevo);
                 misUsuarioos.Add(nuevo);
-                contexto.SaveChanges();
+                contextGlobal.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -108,14 +110,14 @@ namespace Tp3
             try
             {
                 bool salida = false;
-                foreach (Usuario u in contexto.usuarios)
+                foreach (Usuario u in contextGlobal.usuarios)
                     if (u.DNI == Dni)
                     {
-                        contexto.usuarios.Remove(u);
+                        contextGlobal.usuarios.Remove(u);
                         salida = true;
                     }
                 if (salida)
-                    contexto.SaveChanges();
+                    contextGlobal.SaveChanges();
                 return salida;
             }
             catch (Exception)
@@ -128,19 +130,19 @@ namespace Tp3
         {
 
             bool salida = false;
-            foreach (Usuario u in contexto.usuarios)
+            foreach (Usuario u in contextGlobal.usuarios)
                 if (u.DNI == dni)
                 {
                     if(passn == passnc)
                     {
                     u.Password = passn;
-                    contexto.usuarios.Update(u);
+                        contextGlobal.usuarios.Update(u);
                     salida = true;                         
                     }
                   
                 }
             if (salida)
-                contexto.SaveChanges();
+                contextGlobal.SaveChanges();
             return salida;
               
 
@@ -149,7 +151,7 @@ namespace Tp3
         public bool modificarUsuarioAdmin(int Dni, string Nombre, string Mail, string Password, bool EsADM, bool Bloqueado)
         {
         bool salida = false;
-        foreach (Usuario u in contexto.usuarios)
+        foreach (Usuario u in contextGlobal.usuarios)
             if (u.DNI == Dni)
             {
                 u.Nombre = Nombre;
@@ -157,18 +159,18 @@ namespace Tp3
                 u.Password = Password;
                 u.esAdmin = EsADM;
                 u.bloqueado = Bloqueado;
-                contexto.usuarios.Update(u);
+                    contextGlobal.usuarios.Update(u);
                 salida = true;
             }
         if (salida)
-            contexto.SaveChanges();
+            contextGlobal.SaveChanges();
         return salida;
 
     }
 
         public bool autenticarUsuario(int DNI, string password)
         {
-            foreach ( Usuario usu in contexto.usuarios)
+            foreach ( Usuario usu in contextGlobal.usuarios)
             {
                 if (usu.getDNI() == DNI && usu.getPassword() == password)
                 {
@@ -187,7 +189,7 @@ namespace Tp3
         public bool autenticarUsuarioAdmin(int DNI, string password)
         {
 
-            foreach (Usuario usu in contexto.usuarios)
+            foreach (Usuario usu in contextGlobal.usuarios)
             {
                 if (usu.getDNI() == DNI && usu.getPassword() == password)
                 {
@@ -206,12 +208,12 @@ namespace Tp3
 
         public bool desbloquearUsuario(Usuario usu)
         {
-            foreach (Usuario a in contexto.usuarios)
+            foreach (Usuario a in contextGlobal.usuarios)
             {
                 if (a != null && a.getBloqueado() != true)
                 {
                     usu.setBloqueado(true);
-                    contexto.usuarios.Update(usu);
+                    contextGlobal.usuarios.Update(usu);
                     return true;
                 }
             }
@@ -220,13 +222,13 @@ namespace Tp3
 
         public bool bloquearUsuario(int dni)
         {
-            foreach (Usuario a in contexto.usuarios)
+            foreach (Usuario a in contextGlobal.usuarios)
             {
                 if (a != null && a.getDNI() == dni)
                 {
                    
                     a.setBloqueado(false);
-                    contexto.usuarios.Update(a);
+                    contextGlobal.usuarios.Update(a);
 
                     return true;
                 }
@@ -234,28 +236,12 @@ namespace Tp3
             return false;
         }
 
-        private void inicializarAtributosAlojamiento()
-        {
-
-            try
-            {
-                //creo un contexto
-                contextoAloj = new MyContextAlojamiento();
-                //cargo los usuarios
-                contextoAloj.alojamientos.Load();
-                misAlojamientos = contextoAloj.alojamientos;
-            }
-            catch (Exception)
-            {
-
-            }
-        }
         public List<List<string>> obtenerAlojamiento()
         {
            
             List<List<string>> aloj = new List<List<string>>();
 
-            foreach (Alojamiento u in contextoAloj.alojamientos)       
+            foreach (Alojamiento u in contextGlobal.alojamientos)       
 
                 aloj.Add(new List<string>() {u.tipo,u.codigo.ToString(), u.nombre, u.ciudad, u.barrio, u.estrellas.ToString(), u.cantPersonas.ToString(),u.tv.ToString(),u.precioDia.ToString(),
                                             u.precioPorPersona.ToString(),u.habitaciones.ToString(),u.baños.ToString()});
@@ -270,7 +256,7 @@ namespace Tp3
                 Alojamiento nuevo = new Alojamiento(aloj.codigo, aloj.tipo, aloj.ciudad, aloj.barrio, aloj.estrellas, aloj.cantPersonas, aloj.tv, aloj.precioDia, aloj.precioPorPersona, aloj.habitaciones, aloj.baños, aloj.nombre);
                 //contexto.usuarios.Add(nuevo);
                 misAlojamientos.Add(nuevo);
-                contextoAloj.SaveChanges();
+                contextGlobal.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -283,7 +269,7 @@ namespace Tp3
         {
 
             bool salida = false;
-            foreach (Alojamiento u in contextoAloj.alojamientos)
+            foreach (Alojamiento u in contextGlobal.alojamientos)
                 if (u.codigo == aloj.codigo)
                 {
                     u.nombre = aloj.nombre;
@@ -297,12 +283,12 @@ namespace Tp3
                     u.precioPorPersona = aloj.precioPorPersona;
                     u.habitaciones = aloj.habitaciones;
                     u.baños = aloj.baños;
-                    contextoAloj.alojamientos.Update(u);
+                    contextGlobal.alojamientos.Update(u);
                   
                     salida = true;
                 }
             if (salida)
-                contextoAloj.SaveChanges();
+                contextGlobal.SaveChanges();
             return salida;
         }
 
@@ -311,15 +297,15 @@ namespace Tp3
             try
             {
                 bool salida = false;
-                foreach (Alojamiento u in contextoAloj.alojamientos)
+                foreach (Alojamiento u in contextGlobal.alojamientos)
                     if (u.codigo == aloj.codigo)
                     {
-                        contextoAloj.alojamientos.Remove(u);
+                        contextGlobal.alojamientos.Remove(u);
                      
                         salida = true;
                     }
                 if (salida)
-                    contextoAloj.SaveChanges();
+                    contextGlobal.SaveChanges();
                 return salida;
             }
             catch (Exception)
@@ -328,31 +314,11 @@ namespace Tp3
             }
         }
 
-        private void inicializarAtributosReserva()
-        {
-
-            try
-            {
-                //creo un contexto
-                contextoReser = new MyContextReserva();
-                //cargo los usuarios
-                contextoReser.reservas.Load();
-             
-                misReservas = contextoReser.reservas;
-
-                contadorReservas = contextoReser.reservas.Count();
-
-            }
-            catch (Exception)
-            {
-
-            }
-        }
 
         public List<List<string>> obtenerReserva()
         {
             List<List<string>> salida = new List<List<string>>();
-            foreach (Reserva u in contextoReser.reservas)
+            foreach (Reserva u in contextGlobal.reservas)
              
                 salida.Add(new List<string>() { u.id.ToString(), u.fdesde.ToString(), u.fhasta.ToString(), u.precio.ToString(), u.propiedadint.ToString(), u.personaint.ToString() });
             return salida;
@@ -364,7 +330,7 @@ namespace Tp3
 
             List<List<string>> reser = new List<List<string>>();
 
-            foreach (Reserva u in contextoReser.reservas)
+            foreach (Reserva u in contextGlobal.reservas)
 
             {
                 if(u.personaint == dni)
@@ -378,7 +344,7 @@ namespace Tp3
         public List<Usuario> buscarReserva(int DNIusuario)
         {
             List<Usuario> usuarios = new List<Usuario> { };
-            foreach (Usuario a in contexto.usuarios)
+            foreach (Usuario a in contextGlobal.usuarios)
             {
                 if (a.getDNI() == DNIusuario)
                 {
@@ -397,7 +363,7 @@ namespace Tp3
                 //contexto.usuarios.Add(nuevo);
           
                 misReservas.Add(nuevo);
-                contextoReser.SaveChanges();
+                contextGlobal.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -407,22 +373,41 @@ namespace Tp3
 
         }
 
+        public bool calculoReserva(DateTime pdesde,DateTime phasta,int cantPersonas,int precioC,int precioH)
+        {
+            bool calculo = false;
+
+            ts = phasta.Day - pdesde.Day;        
+            precioC = (precioC * cantPersonas) * ts;
+            precioH = (precioH * cantPersonas) * ts;
+            Total = precioC + precioH;
+
+            if(Total > 0)
+            {
+                calculo = true;
+            }
+
+
+            return calculo;
+
+        }
+
         public bool modificarReserva(Reserva reservaNueva, int idAModificar) // Datos de Reserva
         {
             bool reserv = false;
-            foreach (Reserva reser in contextoReser.reservas)
+            foreach (Reserva reser in contextGlobal.reservas)
             {
                 if (reser.id == idAModificar)
                 {
                     reser.fdesde = reservaNueva.fdesde;
                     reser.fhasta = reservaNueva.fhasta;
                     reser.precio = reservaNueva.precio;
-                    contextoReser.reservas.Update(reser);
+                    contextGlobal.reservas.Update(reser);
                     reserv = true;
                 }
             }
             if (reserv)
-                contextoReser.SaveChanges();
+                contextGlobal.SaveChanges();
             return reserv;
         }
 
@@ -431,15 +416,15 @@ namespace Tp3
             try
             {
                 bool salida = false;
-                foreach (Reserva u in contextoReser.reservas)
+                foreach (Reserva u in contextGlobal.reservas)
                     if (u.id == reservar.id)
                     {
-                        contextoReser.reservas.Remove(u);
+                        contextGlobal.reservas.Remove(u);
                    
                         salida = true;
                     }
                 if (salida)
-                    contextoReser.SaveChanges();
+                    contextGlobal.SaveChanges();
                 return salida;
             }
             catch (Exception)
@@ -452,9 +437,8 @@ namespace Tp3
 
         public void cerrar()
         {
-            contexto.Dispose();
-            contextoAloj.Dispose();
-            contextoReser.Dispose();
+            contextGlobal.Dispose();
+        
         }
 
 

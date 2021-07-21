@@ -14,10 +14,7 @@ namespace Tp3
         public Usuario persona;
         public int propiedadint;
         public int personaint;
-        public int precio;
-
-
-       
+        public int precio;       
 
         public Reserva(int Id,DateTime Fdesde, DateTime Fhasta, int Precio, int Propiedadint, int Personaint)
         {

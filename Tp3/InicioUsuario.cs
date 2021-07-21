@@ -14,7 +14,6 @@ namespace Tp3
         int propiedad;
         int precioC;
         int precioH;
-        int Total;
         string TipoAlojamiento = "";
         Reserva reservaEliminar;
         public InicioUsuario()
@@ -120,15 +119,7 @@ namespace Tp3
             
         }
 
-        private void label6_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
+      
         //boton para refrescar la vista de reserva
         private void button2_Click(object sender, EventArgs e)
         {
@@ -146,19 +137,14 @@ namespace Tp3
             DateTime Pdesde = DateTime.Parse(dateTimePicker1.Text);
             DateTime Phasta = DateTime.Parse(dateTimePicker2.Text);
             int cantPersonas = int.Parse(textBox1.Text);
-            TimeSpan ts = dateTimePicker2.Value - dateTimePicker1.Value;
-            int diferencia = (int)ts.TotalDays;
-            precioC = (precioC * cantPersonas) * diferencia;
-            precioH = (precioH * cantPersonas) * diferencia;
-
-            Total = precioC + precioH;
             int dni = int.Parse(label10.Text);
-
             int id = ag.contadorReservas + 1;
 
-            MessageBox.Show("Datos de la reserva :" + "\nTiempo de reserva :" + diferencia + "\nPrecio :" + Total + "\nDNI :" + dni);
+            ag.calculoReserva(Pdesde, Phasta, cantPersonas,precioC,precioH);      
 
-            Reserva reserva = new Reserva(id,Pdesde, Phasta, Total, propiedad, dni);
+            MessageBox.Show("Datos de la reserva :" + "\nTiempo de reserva en dias :" + ag.ts + "\nPrecio :" + ag.Total + "\nDNI :" + dni);
+
+            Reserva reserva = new Reserva(id,Pdesde, Phasta, ag.Total, propiedad, dni);
 
             if (ag.reservar(reserva)){
                 MessageBox.Show("Se ha generado una nueva reserva para el Usuario :" + dni);
